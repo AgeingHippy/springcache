@@ -34,7 +34,7 @@ public class EmployeeService {
                                 "Employee not found: " + employeeId));
     }
 
-    @Cacheable(value = "allEmployees")
+    @Cacheable(value = "employees", key="'all'")
     public List<Employee> getAllEmployees() {
         fakeDelay("Fetching all employees from the database...");
         return employeeRepository.findAll();
@@ -42,7 +42,7 @@ public class EmployeeService {
 
     //    @CachePut(value = "employees", key = "#employee.id")
 //    @CacheEvict(value = "employees")
-    @Caching(evict = @CacheEvict(value = "allEmployees", allEntries = true),
+    @Caching(evict = @CacheEvict(value = "employees", key="'all'"),
             put = @CachePut(value = "employees", key = "#employee.id"))
     public Employee saveEmployee(Employee employee) {
         System.out.println(
@@ -51,11 +51,11 @@ public class EmployeeService {
     }
 
     @Caching(evict = {
-            @CacheEvict(value = "allEmployees", allEntries = true),
-            @CacheEvict(value = "employees", key = "#employee.id")})
+            @CacheEvict(value = "employees", key="'all'"),
+            @CacheEvict(value = "employees", key = "#employeeId")})
     public void deleteEmployee(Integer employeeId) {
         System.out.println(
-                "Removing employee from the database and cache, and clearing the AllEmployees cache entry");
+                "Removing employee from the database and cache, and clearing the employees::all cache entry");
         employeeRepository.deleteById(employeeId);
     }
 
